@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Zap, Lock, Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 interface Props {
   onClose: () => void;
@@ -22,9 +23,15 @@ export default function ProModal({ onClose }: Props) {
     setLoading(true);
     setError('');
     try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
       const res = await fetch('/api/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
+        },
         body: JSON.stringify({ origin: window.location.origin }),
       });
 
