@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,15 +15,47 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Combo banner entrance animation */
+@keyframes combo-enter {
+  from { opacity: 0; transform: translateY(-14px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+.combo-enter { animation: combo-enter 0.22s ease-out; }
+
+/* Tile match particle animations */
+@keyframes particle-out {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1.3)  rotate(0deg); }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.15) rotate(var(--r)); }
+}
+@keyframes match-burst {
+  0%   { opacity: 0.9; transform: translate(-50%, -50%) scale(0.4); }
+  35%  { opacity: 1;   transform: translate(-50%, -50%) scale(2.2); }
+  100% { opacity: 0;   transform: translate(-50%, -50%) scale(4); }
+}
+
+/* Smooth dark mode transition */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.1s ease;
+}
+
+/* Custom scrollbar for board overflow */
+.overflow-auto::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.overflow-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+.overflow-auto::-webkit-scrollbar-thumb {
+  background: #a7f3d0;
+  border-radius: 99px;
+}
+.dark .overflow-auto::-webkit-scrollbar-thumb {
+  background: #065f46;
 }
