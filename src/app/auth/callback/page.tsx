@@ -9,6 +9,14 @@ export default function AuthCallback() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Diagnose env vars for non-ISO-8859-1 characters (causes fetch header TypeError)
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '';
+    const badUrlChars = [...supabaseUrl].filter(c => c.charCodeAt(0) > 127);
+    const badKeyChars = [...supabaseKey].filter(c => c.charCodeAt(0) > 127);
+    console.log('[auth/callback] SUPABASE_URL:', supabaseUrl, '| bad chars:', badUrlChars);
+    console.log('[auth/callback] ANON_KEY length:', supabaseKey.length, '| bad chars:', badKeyChars, '| first charCode:', supabaseKey.charCodeAt(0), '| last charCode:', supabaseKey.charCodeAt(supabaseKey.length - 1));
+
     const supabase = createClient();
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');

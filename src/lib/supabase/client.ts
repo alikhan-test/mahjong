@@ -14,6 +14,12 @@ export function createClient() {
     cachedClient = createSupabaseClient<Database>(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        auth: {
+          flowType: 'pkce',
+          detectSessionInUrl: false, // we exchange the code manually in /auth/callback
+        },
+      },
     );
   }
   return cachedClient;
