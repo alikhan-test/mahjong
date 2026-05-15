@@ -3,8 +3,6 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 function adminClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,6 +14,7 @@ export async function POST(req: NextRequest) {
   if (!process.env.STRIPE_SECRET_KEY) {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 500 });
   }
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
   let userId: string | undefined;
   let userEmail: string | undefined;
