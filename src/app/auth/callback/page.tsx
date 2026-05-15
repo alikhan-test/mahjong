@@ -10,17 +10,33 @@ export default function AuthCallback() {
 
   useEffect(() => {
     const supabase = createClient();
-    const code = new URLSearchParams(window.location.search).get('code');
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const errorParam = params.get('error');
+    const errorDesc = params.get('error_description');
+
+    console.log('[auth/callback] params:', Object.fromEntries(params.entries()));
+    console.log('[auth/callback] code present:', !!code);
+
+    if (errorParam) {
+      console.error('[auth/callback] OAuth error from provider:', errorParam, errorDesc);
+      setError(`${errorParam}: ${errorDesc ?? ''}`);
+      return;
+    }
 
     if (!code) {
+      console.warn('[auth/callback] No code in URL, redirecting home');
       router.replace('/');
       return;
     }
 
-    supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+    console.log('[auth/callback] Calling exchangeCodeForSession...');
+    supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
       if (error) {
+        console.error('[auth/callback] exchangeCodeForSession failed:', error.status, error.message, error);
         setError(error.message);
       } else {
+        console.log('[auth/callback] Session obtained, user:', data.user?.id, data.user?.email);
         router.replace('/');
       }
     });
